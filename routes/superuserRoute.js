@@ -1,5 +1,5 @@
 const express = require('express');
-const { signin } = require('../controller/superuserCtrl');
+const { signin, login } = require('../controller/superuserCtrl');
 const router = express.Router();
 const globalResponse = require('../helper/globalResponse');
 const { body } = require('express-validator');
@@ -13,6 +13,7 @@ const validationUser = [
     body('Role').isLength({min: 3}).withMessage('Role must not empty')
 ]
 
-router.post('/', validationUser, signin, globalResponse);
+router.post('/signin', validationUser, signin, globalResponse );
+router.post('/login', login, globalResponse );
 
 module.exports = router;
