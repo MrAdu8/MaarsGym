@@ -1,8 +1,8 @@
 const globalResponse = function (req, res) {
     const commonResponse = {
-        data: {},
-        message: {},
-        error: {},
+        data: res.apiResponse.data || {},
+        message: res.apiResponse.message || {},
+        error: res.apiResponse.error || {},
         time: new Date().toISOString(),
         path: req.path,
     }

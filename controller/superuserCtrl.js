@@ -35,7 +35,7 @@ const signin = async(req, res, next) => {
         await connection.rollback();
         res.apiResponse = {
             status: 'failed',
-            statusCode: '404',
+            statusCode: 500,
             message: 'Something Failed!!!',
             error: error
         };
@@ -46,34 +46,42 @@ const signin = async(req, res, next) => {
 const login = async (req, res, next) => {
     const { Name, Password } = req.body;
     try {
-        const [ rows ] = await connection.query('SELECT * FROM superuser WHERE Name = ?', [Name]);
-        const existingUser = rows;
+        const sql = 'SELECT * FROM superuser WHERE Name = ?'
+        const rows = await connection.query(sql, Name);
 
-        if (existingUser.length === 0 || !existingUser[0]) {
-          res.apiResponse = {
-            status: 'failed',
-            statusCode: 200,
-            message: 'User not Found',
-          }
-          return next();
-        };
-        const matchpass = await bcrypt.compare(Password, existingUser[0].Password);
-        if (!matchpass) {
+        if (rows.length === 0) {
             res.apiResponse = {
-              status: 'failed',
-              statusCode: 200,
-              message: 'Password is wrong',
-            }
+                status: 'failed',
+                statusCode: 400,
+                message: 'User not Found',
+            };
             return next();
-          };
+        }
+
+        const existingUser = rows[0];
+        const matchPass = await bcrypt.compare(Password, existingUser.Password);
+        if (!matchPass) {
+            res.apiResponse = {
+                status: 'failed',
+                statusCode: 400,
+                message: 'Password is Wrong',
+            };
+            return next();
+        }
+
+        res.apiResponse = {
+            status: 'success',
+            message: 'Login Successfully'
+        };
+        next();
 
     } catch (error) {
         await connection.rollback();
         res.apiResponse = {
             status: 'failed',
-            statusCode: '404',
+            statusCode: 500,
             message: 'Something Failed!!!',
-            error: error
+            error: error.message,
         };
         next();
     }
