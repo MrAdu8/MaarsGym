@@ -12,6 +12,7 @@ const generateCustomId = (prefix, year, id) => {
 
 const newcustomer = async(req, res, next) => {
     try {
+      await connection.beginTransaction();
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             await connection.rollback();
@@ -46,7 +47,6 @@ const newcustomer = async(req, res, next) => {
         next();
 
     } catch (error) {
-        console.log(error);
         await connection.rollback();
         res.apiResponse = {
             status: 'failed',
@@ -71,7 +71,6 @@ const oldcustomer = async (req, res, next) => {
           return next();
 
     } catch (error) {
-        await connection.rollback();
         res.apiResponse = {
             status: 'failed',
             statusCode: 500,
@@ -115,8 +114,8 @@ const updatecustomer = async(req, res, next) => {
         data: result
       };
       next();
+      
     } catch (error) {
-        console.log(error);
       await connection.rollback();
       res.apiResponse = {
         status: 'failed',

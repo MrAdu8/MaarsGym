@@ -1,8 +1,7 @@
 const connection  = require('../database');
-const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
 
-const signin = async(req, res, next) => {
+const newcoupon = async(req, res, next) => {
     try {
         await connection.beginTransaction();
         const errors = validationResult(req);
@@ -10,29 +9,65 @@ const signin = async(req, res, next) => {
             await connection.rollback();
             res.apiResponse = {
                 status: 'failed',
-                statusCode: '400',
+                statusCode: 404,
                 message: 'Validation Failed',
                 error : errors
             }
             next();
         };
-        const { Name, Password, Role } = req.body;
-        const hashpass = await bcrypt.hash(Password, 10)
+        const { Value, Name, Type } = req.body;
         const data = {
+            Value,
             Name,
-            Password: hashpass,
-            Role
+            Type
         };
-        const sql = 'INSERT INTO superuser SET ?'
+        const sql = 'INSERT INTO coupon SET ?'
         const add = await connection.query(sql, data);
         await connection.commit();
         res.apiResponse = {
             status: 'success',
-            message: 'User added Successfully',
+            message: 'Coupon added Successfully',
         };
         next();
 
     } catch (error) {
+        await connection.rollback();
+        res.apiResponse = {
+            status: 'failed',
+            statusCode: 500,
+            message: 'Something Failed!!!',
+            data: error
+        };
+        next();
+    };
+};
+
+const deletecoupon = async (req, res, next) => {
+    const { Name } = req.body;
+    try {
+        await connection.beginTransaction();
+        const sql = 'DELETE FROM coupon WHERE Name = ?';
+        const deleteC = await connection.query(sql, [Name]);
+        if (deleteC.affectedRows === 0) {
+            await connection.rollback();
+            res.apiResponse = {
+                status: 'failed',
+                statusCode: 400,
+                message: 'Coupon not found',
+            };
+            return next();
+        }
+        await connection.commit();
+        res.apiResponse = {
+            status: 'success',
+            statusCode: 200,
+            message: 'User Deleted Successfully',
+            data: deleteC,
+          }
+          return next();
+
+    } catch (error) {
+        console.log(error);
         await connection.rollback();
         res.apiResponse = {
             status: 'failed',
@@ -41,52 +76,7 @@ const signin = async(req, res, next) => {
             error: error
         };
         next();
-    };
-};
-
-const login = async (req, res, next) => {
-    const { Name, Password } = req.body;
-    try {
-        await connection.beginTransaction();
-        const sql = 'SELECT * FROM superuser WHERE Name = ?'
-        const rows = await connection.query(sql, Name);
-
-        if (rows.length === 0) {
-            res.apiResponse = {
-                status: 'failed',
-                statusCode: 400,
-                message: 'User not Found',
-            };
-            return next();
-        }
-
-        const existingUser = rows[0];
-        const matchPass = await bcrypt.compare(Password, existingUser.Password);
-        if (!matchPass) {
-            res.apiResponse = {
-                status: 'failed',
-                statusCode: 400,
-                message: 'Password is Wrong',
-            };
-            return next();
-        }
-
-        res.apiResponse = {
-            status: 'success',
-            message: 'Login Successfully'
-        };
-        next();
-
-    } catch (error) {
-        await connection.rollback();
-        res.apiResponse = {
-            status: 'failed',
-            statusCode: 500,
-            message: 'Something Failed!!!',
-            error: error.message,
-        };
-        next();
     }
 };
 
-module.exports = { signin, login }
+module.exports = { newcoupon, deletecoupon };
