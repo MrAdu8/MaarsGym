@@ -1,5 +1,5 @@
 const express = require('express');
-const { newcustomer, oldcustomer, updatecustomer } = require('../controller/customerCtrl');
+const { newCustomer, oldcustomer, updatecustomer } = require('../controller/customerCtrl');
 const router = express.Router();
 const globalResponse = require('../helper/globalResponse');
 const { body } = require('express-validator');
@@ -12,7 +12,7 @@ const validationUser = [
     body('MedicalCondition').isLength({min: 2}).withMessage('Role must not empty'),
 ]
 
-router.post('/', validationUser, newcustomer,  globalResponse );
+router.post('/', validationUser, newCustomer,  globalResponse );
 router.get('/', oldcustomer,  globalResponse );
 router.post('/:id', updatecustomer,  globalResponse );
 
