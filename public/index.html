@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="icon" href="./images/GymLogo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url('./images/gymDumbleRack.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            transition: transform 0.5s ease-in-out;
+        }
+        .login-card h1 {
+            margin-bottom: 1.5rem;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 900;
+        }
+        .btn-primary {
+            width: 100%;
+        }
+        .hidden {
+            display: none;
+        }
+        .zoom-in {
+            animation: zoomIn 0.5s forwards;
+        }
+        @keyframes zoomIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1 class="text-center">Maars Gym</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="text" placeholder="Username" class="form-control" id="loginName" required>
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="Password" class="form-control" id="loginPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+    <div id="nextPage" class="hidden">
+        <h1 class="text-center">Welcome to Maars Gym!</h1>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+            // Perform your validation logic here
+            const loginCard = document.querySelector('.login-card');
+            const nextPage = document.getElementById('nextPage');
+
+            loginCard.style.transform = 'scale(0)';
+            setTimeout(function() {
+                loginCard.classList.add('hidden');
+                nextPage.classList.remove('hidden');
+                nextPage.classList.add('zoom-in');
+            }, 500);
+        });
+    </script>
+</body>
+</html>

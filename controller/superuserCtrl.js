@@ -48,8 +48,8 @@ const login = async (req, res, next) => {
     const { Name, Password } = req.body;
     try {
         await connection.beginTransaction();
-        const sql = 'SELECT * FROM superuser WHERE Name = ?'
-        const rows = await connection.query(sql, Name);
+        const sql = 'SELECT * FROM superuser WHERE Name = ?';
+        const rows = await connection.query(sql, [Name]);
 
         if (rows.length === 0) {
             res.apiResponse = {
@@ -75,6 +75,7 @@ const login = async (req, res, next) => {
             status: 'success',
             message: 'Login Successfully'
         };
+        await connection.commit();
         next();
 
     } catch (error) {
